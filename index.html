@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --whatsapp-green: #25D366;
+            --whatsapp-dark-green: #128C7E;
+            --whatsapp-teal-green: #075E54;
+            --whatsapp-light-green: #DCF8C6;
+            --whatsapp-chat-bg: #ECE5DD;
+            --whatsapp-header-bg: #F0F2F5;
+            --whatsapp-text-dark: #3B4A54;
+            --whatsapp-text-light: #667781;
+        }
+
+        body {
+            background-color: var(--whatsapp-chat-bg);
+            color: var(--whatsapp-text-dark);
+            font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.4;
+        }
+
+        .welcome-header {
+            background-color: var(--whatsapp-teal-green);
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--whatsapp-green);
+        }
+
+        .error-message {
+            color: #ff3333;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-image-container {
+            position: relative;
+            width: 100%;
+            padding-top: 70%;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+
+        .product-card-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-card-img {
+            transform: scale(1.03);
+        }
+
+        .thumbnail-container {
+            display: flex;
+            gap: 5px;
+            padding: 5px 8px;
+            overflow-x: auto;
+            background-color: rgba(0, 0, 0, 0.02);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .thumbnail-item {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .thumbnail-item:hover {
+            border-color: var(--whatsapp-green);
+        }
+
+        .thumbnail-item.active {
+            border-color: var(--whatsapp-teal-green);
+        }
+
+        .thumbnail-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-nav-buttons {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 8px;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
+        .nav-btn {
+            width: 25px;
+            height: 25px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            font-size: 0.8rem;
+        }
+
+        .product-image-container:hover .nav-btn {
+            opacity: 1;
+        }
+
+        .card-body {
+            padding: 0.8rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-weight: 500;
+            color: var(--whatsapp-text-dark);
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        .card-text.text-primary {
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            color: var(--whatsapp-teal-green) !important;
+            font-weight: 600;
+        }
+
+        .card-description {
+            font-size: 0.8rem;
+            color: var(--whatsapp-text-light);
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex-grow: 1;
+            line-height: 1.3;
+        }
+
+        .card-footer {
+            padding: 0.5rem 0.8rem;
+            background-color: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        #searchContainer {
+            margin-bottom: 15px;
+            background: white;
+            padding: 0.8rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 15px;
+            display: none;
+            background: white;
+            border-radius: 6px;
+            margin-top: 1rem;
+            color: var(--whatsapp-text-light);
+        }
+
+        .btn-primary {
+            background-color: var(--whatsapp-teal-green);
+            border-color: var(--whatsapp-teal-green);
+            padding: 0.4rem 1rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--whatsapp-dark-green);
+            border-color: var(--whatsapp-dark-green);
+        }
+
+        .btn-success {
+            background-color: var(--whatsapp-green);
+            border-color: var(--whatsapp-green);
+            font-weight: 500;
+            width: 100%;
+            padding: 0.4rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-success:hover {
+            background-color: var(--whatsapp-dark-green);
+            border-color: var(--whatsapp-dark-green);
+        }
+
+        .input-group {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-control {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--whatsapp-green);
+            box-shadow: 0 0 0 0.2rem rgba(37, 211, 102, 0.25);
+        }
+
+        .business-description {
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .business-category {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+        }
+
+        .whatsapp-icon {
+            margin-right: 4px;
+            font-size: 0.9rem;
+        }
+
+        .display-4 {
+            font-size: 1.6rem;
+            font-weight: 500;
+        }
+
+        .lead {
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .thumbnail-container::-webkit-scrollbar {
+            height: 3px;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .thumbnail-container::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 1.5px;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        #productsGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            padding: 0 15px;
+        }
+
+        @media (min-width: 768px) {
+            #productsGrid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 992px) {
+            #productsGrid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            #productsGrid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .product-card {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-header {
+                padding: 1rem 0;
+            }
+
+            .display-4 {
+                font-size: 1.4rem;
+            }
+
+            .business-description {
+                font-size: 0.85rem;
+            }
+
+            .product-image-container {
+                padding-top: 65%;
+            }
+
+            .thumbnail-item {
+                width: 35px;
+                height: 35px;
+                min-width: 35px;
+            }
+
+            .nav-btn {
+                width: 22px;
+                height: 22px;
+                font-size: 0.7rem;
+            }
+
+            .card-body {
+                padding: 0.7rem;
+            }
+
+            .card-title {
+                font-size: 0.9rem;
+            }
+
+            .card-text.text-primary {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <header class="welcome-header text-center">
+        <div class="container">
+            <h1 class="display-4 mb-2" id="businessNameTitle">Welcome to Our Store</h1>
+            <p class="lead business-description" id="businessDescription">Discover our amazing collection of products</p>
+            <div id="businessCategory" class="business-category"></div>
+        </div>
+    </header>
+    <div class="container mt-2">
+        <div id="searchContainer" class="row mb-3">
+            <div class="col-12">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search products by name or description...">
+                    <button class="btn btn-primary" type="button" id="searchButton">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="productsGrid">
+            <!-- Product cards will be dynamically added here -->
+        </div>
+        <div id="noResults" class="no-results">
+            <h4>No products found matching your search</h4>
+            <p class="text-muted">Try different keywords or browse our full collection</p>
+        </div>
+        <div id="loadMoreContainer" class="text-center mt-3 mb-3" style="display: none;">
+            <button id="loadMoreBtn" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> Load More Products
+            </button>
+        </div>
+        <div id="errorContainer" class="error-message" style="display: none;">
+            <p>Failed to load products. Please try again later.</p>
+            <button class="btn btn-outline-primary mt-2" onclick="fetchAllProducts()">
+                <i class="fas fa-sync-alt"></i> Retry
+            </button>
+        </div>
+    </div>
+    <script>
+        // Global variables
+        let allProducts = [];
+        let displayedProducts = [];
+        let currentPage = 1;
+        const productsPerPage = 12;
+        let isLoading = false;
+        let hasMoreProducts = true;
+        const defaultPhoneNumber = "2348123456789";
+        const defaultBusinessName = "Our Store";
+        let businessData = null;
+
+        // Get slug from URL
+        function getSlugFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let slug = urlParams.get('slug');
+            return slug || 'Business enture';
+        }
+
+        // Format price with commas
+        function formatPrice(price) {
+            return '₦' + price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Show loading indicator
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+
+        // Show error message
+        function showError(show) {
+            document.getElementById('errorContainer').style.display = show ? 'block' : 'none';
+        }
+
+        // Update business info in header
+        function updateBusinessInfo(business) {
+            if (business) {
+                document.getElementById('businessNameTitle').textContent = `Welcome to ${business.name || defaultBusinessName}`;
+                if (business.description) {
+                    document.getElementById('businessDescription').textContent = business.description;
+                }
+                if (business.category) {
+                    document.getElementById('businessCategory').textContent = business.category;
+                }
+            }
+        }
+
+        // Generate WhatsApp message
+        function generateWhatsAppMessage(product) {
+            const businessName = businessData?.name || defaultBusinessName;
+            const phoneNumber = product.phoneNumber || businessData?.phoneNumber || defaultPhoneNumber;
+            const message = `Hello! ${businessName} I'm interested in buying:\n\n🛍️ ${product.name}\n💰 Price: ${formatPrice(product.unitPrice)}\n\nPlease let me know if it's still available.`;
+            return encodeURIComponent(message);
+        }
+
+        // Create product card HTML
+        function createProductCard(product) {
+            const hasMultipleImages = product.imageUrls && product.imageUrls.length > 1;
+            const mainImage = product.imageUrls && product.imageUrls.length > 0 ? product.imageUrls[0] : 'https://via.placeholder.com/500x500?text=No+Image';
+            const whatsappMessage = generateWhatsAppMessage(product);
+            const phoneNumber = product.phoneNumber || businessData?.phoneNumber || defaultPhoneNumber;
+
+            // Create thumbnail HTML if there are multiple images
+            let thumbnailHTML = '';
+            if (hasMultipleImages) {
+                thumbnailHTML = `
+                    <div class="thumbnail-container">
+                        ${product.imageUrls.map((img, index) => `
+                            <div class="thumbnail-item ${index === 0 ? 'active' : ''}"
+                                 data-product-id="${product.id}"
+                                 data-img-index="${index}"
+                                 onclick="changeProductImage('${product.id}', ${index})">
+                                <img src="${img}" class="thumbnail-img" alt="Thumbnail ${index + 1}">
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="${mainImage}" class="product-card-img" id="product-img-${product.id}" alt="${product.name}" loading="lazy">
+                        ${hasMultipleImages ? `
+                            <div class="image-nav-buttons">
+                                <div class="nav-btn" onclick="navigateProductImage('${product.id}', -1)">
+                                    <i class="fas fa-chevron-left"></i>
+                                </div>
+                                <div class="nav-btn" onclick="navigateProductImage('${product.id}', 1)">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    ${thumbnailHTML}
+                    <div class="card-body">
+                        <h5 class="card-title">${product.name}</h5>
+                        <p class="card-text text-primary">${formatPrice(product.unitPrice)}</p>
+                        <p class="card-description">${product.description || 'No description available'}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="https://wa.me/${phoneNumber}?text=${whatsappMessage}" class="btn btn-success">
+                            <i class="fab fa-whatsapp whatsapp-icon"></i> Order Via WhatsApp
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Change product image when thumbnail is clicked
+        function changeProductImage(productId, imageIndex) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product || !product.imageUrls || imageIndex >= product.imageUrls.length) return;
+
+            // Update main image
+            const imgElement = document.getElementById(`product-img-${productId}`);
+            if (imgElement) {
+                imgElement.src = product.imageUrls[imageIndex];
+            }
+
+            // Update active thumbnail
+            const thumbnails = document.querySelectorAll(`.thumbnail-item[data-product-id="${productId}"]`);
+            thumbnails.forEach((thumb, index) => {
+                if (index === imageIndex) {
+                    thumb.classList.add('active');
+                } else {
+                    thumb.classList.remove('active');
+                }
+            });
+        }
+
+        // Navigate product images with arrows
+        function navigateProductImage(productId, direction) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product || !product.imageUrls) return;
+
+            const currentActive = document.querySelector(`.thumbnail-item.active[data-product-id="${productId}"]`);
+            let currentIndex = currentActive ? parseInt(currentActive.getAttribute('data-img-index')) : 0;
+
+            let newIndex = currentIndex + direction;
+            if (newIndex < 0) newIndex = product.imageUrls.length - 1;
+            if (newIndex >= product.imageUrls.length) newIndex = 0;
+
+            changeProductImage(productId, newIndex);
+        }
+
+        // Render products
+        function renderProducts(products) {
+            const productsGrid = document.getElementById('productsGrid');
+
+            if (products.length === 0) {
+                document.getElementById('noResults').style.display = 'block';
+                productsGrid.innerHTML = '';
+            } else {
+                document.getElementById('noResults').style.display = 'none';
+                const productsHTML = products.map(createProductCard).join('');
+                productsGrid.innerHTML += productsHTML;
+            }
+        }
+
+        // Filter products based on search term
+        function filterProducts(searchTerm) {
+            if (!searchTerm) return allProducts;
+
+            const term = searchTerm.toLowerCase();
+            return allProducts.filter(product =>
+                product.name.toLowerCase().includes(term) ||
+                (product.description && product.description.toLowerCase().includes(term))
+            );
+        }
+
+        // Load more products
+        function loadMoreProducts() {
+            if (isLoading || !hasMoreProducts) return;
+
+            isLoading = true;
+            showLoading(true);
+
+            const startIndex = (currentPage - 1) * productsPerPage;
+            const endIndex = startIndex + productsPerPage;
+            const productsToDisplay = displayedProducts.slice(startIndex, endIndex);
+
+            if (productsToDisplay.length > 0) {
+                renderProducts(productsToDisplay);
+                currentPage++;
+
+                if (endIndex >= displayedProducts.length) {
+                    hasMoreProducts = false;
+                    document.getElementById('loadMoreContainer').style.display = 'none';
+                }
+            } else {
+                hasMoreProducts = false;
+                document.getElementById('loadMoreContainer').style.display = 'none';
+            }
+
+            isLoading = false;
+            showLoading(false);
+        }
+
+        // Handle search
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            displayedProducts = filterProducts(searchTerm);
+
+            currentPage = 1;
+            hasMoreProducts = true;
+            document.getElementById('productsGrid').innerHTML = '';
+
+            if (displayedProducts.length > productsPerPage) {
+                document.getElementById('loadMoreContainer').style.display = 'block';
+            } else {
+                document.getElementById('loadMoreContainer').style.display = 'none';
+            }
+
+            loadMoreProducts();
+        }
+
+        // Fetch all products from API
+        async function fetchAllProducts() {
+            showLoading(true);
+            showError(false);
+            const slug = getSlugFromUrl();
+            const apiUrl = `https://nznzl0w7-7236.uks1.devtunnels.ms/api/v1/businesses?slug=${slug}&page=1&pageSize=100`;
+
+            try {
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+
+                if (data.isSuccess && data.data) {
+                    businessData = data.data;
+                    allProducts = data.data.products || [];
+                    displayedProducts = [...allProducts];
+
+                    updateBusinessInfo(businessData);
+
+                    if (displayedProducts.length > productsPerPage) {
+                        document.getElementById('loadMoreContainer').style.display = 'block';
+                    }
+                    loadMoreProducts();
+
+                    window.addEventListener('scroll', () => {
+                        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
+                        if (scrollTop + clientHeight >= scrollHeight - 100 && hasMoreProducts) {
+                            loadMoreProducts();
+                        }
+                    });
+                } else {
+                    throw new Error('Invalid products data');
+                }
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                showError(true);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Initialize the page
+        window.onload = function() {
+            fetchAllProducts();
+
+            document.getElementById('searchButton').addEventListener('click', handleSearch);
+            document.getElementById('searchInput').addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') handleSearch();
+            });
+
+            document.getElementById('loadMoreBtn').addEventListener('click', loadMoreProducts);
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+</html>
