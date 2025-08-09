@@ -23,6 +23,9 @@
             color: var(--whatsapp-text-dark);
             font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .welcome-header {
@@ -310,6 +313,7 @@
 
         .container {
             max-width: 1200px;
+            flex: 1;
         }
 
         #productsGrid {
@@ -317,6 +321,67 @@
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 15px;
             padding: 0 15px;
+        }
+
+        /* Footer styles */
+        .footer {
+            background-color: var(--whatsapp-teal-green);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 1.5rem 0;
+        }
+
+        .download-btn {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            color: var(--whatsapp-teal-green);
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .download-btn:hover {
+            background-color: var(--whatsapp-light-green);
+            color: var(--whatsapp-teal-green);
+            transform: translateY(-2px);
+        }
+
+        .download-btn i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+
+        .powered-by {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 1rem;
+        }
+           .footer-heading {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 1rem;
         }
 
         @media (min-width: 768px) {
@@ -381,6 +446,11 @@
             .card-text.text-primary {
                 font-size: 0.9rem;
             }
+
+            .download-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -427,6 +497,32 @@
             </button>
         </div>
     </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                  <div class="footer-heading">
+                    Sell faster & look more professional on WhatsApp
+                </div>
+                <div class="download-buttons">
+                    <a href="#" class="download-btn">
+                        <i class="fab fa-apple"></i> Download for iOS
+                    </a>
+                    <a href="#" class="download-btn">
+                        <i class="fab fa-google-play"></i> Download for Android
+                    </a>
+                </div>
+                <div class="powered-by">
+                    Powered by <strong>WhatSell</strong>
+                </div>
+                <div class="copyright">
+                    &copy; <span id="currentYear"></span> WhatSell. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <script>
         // Global variables
         let allProducts = [];
@@ -435,9 +531,12 @@
         const productsPerPage = 12;
         let isLoading = false;
         let hasMoreProducts = true;
-        const defaultPhoneNumber = "2348123456789";
+        const defaultPhoneNumber = "2348138454668";
         const defaultBusinessName = "Our Store";
         let businessData = null;
+
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
 
         // Get slug from URL
         function getSlugFromUrl() {
