@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -385,7 +384,6 @@
         }
     </style>
 </head>
-
 <body>
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner-border" role="status">
@@ -395,8 +393,7 @@
     <header class="welcome-header text-center">
         <div class="container">
             <h1 class="display-4 mb-2" id="businessNameTitle">Welcome to Our Store</h1>
-            <p class="lead business-description" id="businessDescription">Discover our amazing collection of products
-            </p>
+            <p class="lead business-description" id="businessDescription">Discover our amazing collection of products</p>
             <div id="businessCategory" class="business-category"></div>
         </div>
     </header>
@@ -404,8 +401,7 @@
         <div id="searchContainer" class="row mb-3">
             <div class="col-12">
                 <div class="input-group">
-                    <input type="text" id="searchInput" class="form-control"
-                        placeholder="Search products by name or description...">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search products by name or description...">
                     <button class="btn btn-primary" type="button" id="searchButton">
                         <i class="fas fa-search"></i> Search
                     </button>
@@ -445,9 +441,9 @@
 
         // Get slug from URL
         function getSlugFromUrl() {
-            const url = new URL(window.location.href);
-            const pathParts = url.pathname.split('/').filter(Boolean); // Removes empty strings
-            return pathParts[0] || 'Business venture';
+            const urlParams = new URLSearchParams(window.location.search);
+            let slug = urlParams.get('slug');
+            return slug || 'Business enture';
         }
 
         // Format price with commas
@@ -653,8 +649,7 @@
             showLoading(true);
             showError(false);
             const slug = getSlugFromUrl();
-            console.log(slug, "kingg")
-            const apiUrl = `https://nznzl0w7-7236.uks1.devtunnels.ms/api/v1/businesses/${slug}&page=1&pageSize=100&api-version=1`;
+            const apiUrl = `https://nznzl0w7-7236.uks1.devtunnels.ms/api/v1/businesses?slug=${slug}&page=1&pageSize=100`;
 
             try {
                 const response = await fetch(apiUrl);
@@ -696,7 +691,7 @@
         }
 
         // Initialize the page
-        window.onload = function () {
+        window.onload = function() {
             fetchAllProducts();
 
             document.getElementById('searchButton').addEventListener('click', handleSearch);
@@ -710,5 +705,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
-
 </html>
