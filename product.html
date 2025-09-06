@@ -365,7 +365,7 @@
             showError(false);
 
             try {
-                const response = await fetch(`https://nznzl0w7-7236.uks1.devtunnels.ms/api/v1/products/${productId}`);
+                const response = await fetch(`https://whatsell-3.onrender.com/api/v1/products/${productId}`);
 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -431,7 +431,7 @@
     <script>
         // Function to log the WhatsApp order click
         function logWhatsAppOrder(productId) {
-            fetch('https://nznzl0w7-7236.uks1.devtunnels.ms/api/v1/products/log-whatsapp-click', {
+            fetch('https://whatsell-3.onrender.com/api/v1/products/log-whatsapp-click', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
