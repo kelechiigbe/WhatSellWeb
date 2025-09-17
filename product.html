@@ -431,7 +431,8 @@
                     updateBusinessInfo(product.businessName, `Viewing ${product.name} from our collection`);
 
                     // Update catalog button with business slug
-                    updateCatalogButton(product.slug);
+                    console.log(product)
+                    updateCatalogButton(product?.slug);
 
                     // Update product details
                     document.getElementById('productName').textContent = product.name;
